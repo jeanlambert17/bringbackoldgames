@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { Search } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react'
+import { Search } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
-  DialogContent,
+  DialogModal,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from '@/components/ui/dialog'
 import {
   Command,
   CommandEmpty,
@@ -14,100 +14,93 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command';
-import { searchGames } from '@/lib/igdb';
-import { useToast } from '@/hooks/use-toast';
-import { type Game } from '@/types/game';
+} from '@/components/ui/command'
+import { findIgdbGames } from '@/lib/igdb'
+import { useToast } from '@/hooks/use-toast'
+import { type IGame } from '@/types/game'
+import debounce from '@/utils/debounce'
 
 interface GameSearchProps {
-  onGameSelect: (game: Game) => void;
+  onGameSelect: (game: IGame) => void
 }
 
 export function GameSearch({ onGameSelect }: GameSearchProps) {
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [games, setGames] = useState<Game[]>([]);
-  const { toast } = useToast();
-
-  const handleSearch = async (query: string) => {
-    if (query.length < 2) {
-      setGames([]);
-      return;
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [games, setGames] = useState<IGame[]>([])
+  const { toast } = useToast()
+  
+  const search = debounce(async (q: string) => {
+    if (q.length < 2) {
+      setGames([])
+      return
     }
 
     try {
-      setLoading(true);
-      const igdbGames = await searchGames(query);
-      const formattedGames = igdbGames.map((game) => ({
-        id: game.id,
-        name: game.name,
-        releaseYear: game.first_release_date
-          ? new Date(game.first_release_date * 1000).getFullYear()
-          : 0,
-        imageUrl: game.cover?.url
-          ? `https:${game.cover.url.replace('t_thumb', 't_cover_big')}`
-          : undefined,
-      }));
-
-      setGames(formattedGames);
+      setLoading(true)
+      setGames(await findIgdbGames(q))
     } catch (error) {
-      console.log(error);
+      console.log(error)
       toast({
         title: 'Error',
         description: 'Failed to search games. Please try again.',
         variant: 'destructive',
-      });
-      setGames([]);
+      })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }, 200)
+
+  const handleSearch = async (q: string) => {
+    search(q)
+  }
 
   return (
     <div className="w-full max-w-sm">
       <Button
         variant="outline"
-        className="w-full justify-start text-muted-foreground"
+        className="justify-start w-full text-muted-foreground"
         onClick={() => setOpen(true)}
       >
-        <Search className="mr-2 h-4 w-4" />
+        <Search className="w-4 h-4 mr-2" />
         Search games...
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="gap-0 p-0">
-          <DialogHeader className="px-4 pb-4 pt-5">
-            <DialogTitle>Search Games</DialogTitle>
+        <DialogModal>
+          <DialogHeader>
+            <DialogTitle>Search for games</DialogTitle>
           </DialogHeader>
-          <Command className="rounded-t-none border-t">
+          <Command shouldFilter={false}>
             <CommandInput
-              placeholder="Type a game name..."
+              placeholder="Search games..."
               onValueChange={handleSearch}
+              autoFocus
             />
-            <CommandList>
+            <CommandList className="py-2 max-h-[50vh]">
               <CommandEmpty>
-                {loading ? 'Searching...' : 'No games found.'}
+                {loading ? 'Searching...' : `No games found. ${games.length}`}
               </CommandEmpty>
               <CommandGroup>
                 {games.map((game) => (
                   <CommandItem
                     key={game.id}
+                    className="flex items-center gap-2 px-3"
                     onSelect={() => {
-                      onGameSelect(game);
-                      setOpen(false);
+                      onGameSelect(game)
+                      setOpen(false)
                     }}
-                    className="flex items-center gap-2 px-4 py-2"
                   >
-                    {game.imageUrl && (
+                    {game.image_url && (
                       <img
-                        src={game.imageUrl}
+                        src={game.image_url}
                         alt={game.name}
-                        className="h-10 w-10 rounded object-cover"
+                        className="object-cover w-10 h-10 rounded"
                       />
                     )}
                     <div className="flex flex-col">
                       <span className="font-medium">{game.name}</span>
                       <span className="text-sm text-muted-foreground">
-                        {game.releaseYear || 'Release date unknown'}
+                        {game.release_year || 'Release date unknown'}
                       </span>
                     </div>
                   </CommandItem>
@@ -115,8 +108,8 @@ export function GameSearch({ onGameSelect }: GameSearchProps) {
               </CommandGroup>
             </CommandList>
           </Command>
-        </DialogContent>
+        </DialogModal>
       </Dialog>
     </div>
-  );
+  )
 }

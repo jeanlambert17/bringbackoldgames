@@ -1,74 +1,111 @@
-import { useEffect, useState } from 'react';
-import { Trophy } from 'lucide-react';
+import { useEffect, useState } from 'react'
+import { Trophy } from 'lucide-react'
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { supabase } from '@/lib/supabase';
-import { type Game } from '@/types/game';
+} from '@/components/ui/card'
+import { supabase } from '@/lib/supabase'
+import { type IGame } from '@/types/game'
+import { Skeleton } from './ui/skeleton'
+import { createFixedArray } from '@/utils/array'
 
-export function GameList() {
-  const [games, setGames] = useState<Game[]>([]);
-  const [loading, setLoading] = useState(true);
+interface Props {
+  openVoteModal: ({ game }: { game: IGame }) => void
+  voteModalProps?: { open: boolean }
+}
+
+export function GameList({ openVoteModal, voteModalProps }: Props) {
+  const [games, setGames] = useState<IGame[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (voteModalProps?.open) return
     async function fetchTopGames() {
       try {
+        // add "user_vote" data
         const { data, error } = await supabase
           .from('games')
-          .select('*')
+          .select('*, platforms ( id, name, abbreviation, logo_url )')
           .order('votes', { ascending: false })
-          .limit(10);
-
-        if (error) throw error;
-        setGames(data || []);
+          // .limit(20)
+        if (error) throw error
+        setGames(data || [])
       } catch (error) {
-        console.error('Error fetching top games:', error);
+        console.error('Error fetching top games:', error)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
 
-    fetchTopGames();
-  }, []);
+    fetchTopGames()
+  }, [voteModalProps?.open])
 
-  if (loading) {
-    return <div className="text-center">Loading top games...</div>;
-  }
+  const data = loading ? createFixedArray(20) : games
 
   return (
-    <div className="space-y-4">
-      <h2 className="flex items-center gap-2 text-2xl font-bold">
-        <Trophy className="h-6 w-6 text-yellow-500" />
-        Top Voted Games
+    <div>
+      <h2 className="flex items-center gap-2 mb-4 text-2xl font-bold">
+        <Trophy className="w-6 h-6 text-yellow-400" />
+        Top Asked Games
       </h2>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {games.map((game) => (
-          <Card key={game.id}>
-            {game.imageUrl && (
-              <div className="relative aspect-video w-full overflow-hidden">
+      {/* <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {data.map((game, i) => game? (
+          <Card key={game.id} className="flex w-full">
+            {game.image_url && (
+              <div className="flex overflow-hidden rounded-l-md" style={{ height: 200, width: 150 }}>
                 <img
-                  src={game.imageUrl}
+                  src={game.image_url}
                   alt={game.name}
-                  className="object-cover"
                 />
               </div>
             )}
-            <CardHeader>
-              <CardTitle>{game.name}</CardTitle>
-              <CardDescription>
-                Released: {game.releaseYear || 'Unknown'}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{game.votes} votes</p>
-            </CardContent>
+            <div className="flex flex-col flex-1 truncate">
+              <CardHeader>
+                <CardTitle title={game.name} className="whitespace-pre-wrap">{game.name}</CardTitle>
+                <CardDescription>
+                  Released: {game.release_year || 'Unknown'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex items-end justify-end flex-1">
+                <span className="text-xl font-bold">
+                  {game.votes}
+                </span>
+              </CardContent>
+            </div>
           </Card>
+        ) : (
+          <Skeleton key={i} className="h-[200px] w-full" />
+        ))}
+      </div> */}
+      <div className="flex flex-col gap-2.5">
+        {data.map((game, i) => game ? (
+          <div key={game.id} className="flex cursor-pointer gap-x-2">
+            <span className="font-medium">{i + 1}.</span>
+            <Card className="flex flex-1 truncate" onClick={() => openVoteModal({ game })}>
+              {game.image_url && (
+                <div className="flex h-20 overflow-hidden rounded-l-md shrink-0">
+                  <img src={game.image_url} alt={game.name} />
+                </div>
+              )}
+              <CardHeader className="truncate">
+                <CardTitle title={game.name} className="truncate">
+                  {game.name}
+                </CardTitle>
+                <CardDescription className="text-sm mt-0.5">
+                  {game.release_year}
+                </CardDescription>
+              </CardHeader>
+              <span className="flex items-center ml-auto mr-4 font-semibold">
+                {game.votes}
+              </span>
+            </Card>
+          </div>
+        ) : (
+          <Skeleton key={i} className="h-[200px] w-full" />
         ))}
       </div>
     </div>
-  );
+  )
 }
