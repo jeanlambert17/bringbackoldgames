@@ -38,10 +38,12 @@ export const mapIgdbToGame = (game: IGDBGame): IGame => ({
   })),
 })
 
-export async function findIgdbGames(q: string): Promise<IGame[]> {
+export async function findIgdbGames(q: string, signal?: AbortSignal): Promise<IGame[]> {
   try {
     const { data, error } = await supabase.functions.invoke('old-games', {
       body: { q },
+      // Not supported until maybe: https://github.com/supabase/functions-js/pull/93
+      // abortSignal: signal,
     })
     if(error) {
       console.log({ error })
@@ -49,6 +51,10 @@ export async function findIgdbGames(q: string): Promise<IGame[]> {
     }
     return data.map(mapIgdbToGame)
   } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      // Handle abort specifically
+      throw new Error('Search was cancelled')
+    }
     console.error('Error fetching games:', error)
     throw error
   }

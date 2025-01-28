@@ -13,7 +13,8 @@ import {
 import { Button } from '@/components/ui/button'
 import { useAuthContext } from '@/contexts/auth.context'
 import { type IGame } from '@/types/game'
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './ui/tooltip'
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../ui/tooltip'
+import { ExternalLinkIcon } from 'lucide-react'
 
 interface GameVoteDialogProps {
   game?: IGame
@@ -119,51 +120,55 @@ export function GameVoteDialog({ game, open, onOpenChange }: GameVoteDialogProps
           <DialogTitle>I want {game?.name} back!</DialogTitle>
         </DialogHeader>
         <DialogMain className="">
-          {/* {user? null : (
-          )} */}
           <DialogDescription className="mb-6">
-            {/* Sign in with Google to vote for this game. We only use your email to prevent duplicate votes. */}
             Express your interest in seeing {game?.name} on modern platforms as a remake, refactor, or just a port on newer platforms.
-            {/* It provides an opportunity to engage with the gaming community and let developers know there&apos;s demand for the game.
-            Key Features:
-            •	Vote for Revival: Share your enthusiasm for bringing back this game.
-            •	Community Insight: See how many others want this game revived.
-            •	Developer Engagement: Your vote contributes to highlighting interest for developers or publishers.
-
-            Purpose:
-            This feature bridges the gap between gamers and developers, showing which classic or beloved games have strong demand for a return or reimagining on newer platforms. */}
           </DialogDescription>
-          <div className="flex justify-center space-x-2">
-            {game?.image_url && (
-              <div className="relative flex overflow-hidden rounded-md">
-                <img
-                  src={game?.image_url}
-                  alt={game?.name}
-                  className="object-cover"
-                />
-                <div className="flex flex-col gap-y-1.5 ml-2">
-                  {game?.platforms?.map(platform => (
-                    <TooltipProvider key={platform.id} delayDuration={200}>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <img
-                            src={platform.logo_url}
-                            style={{
-                              height: 24,
-                              width: 24,
-                            }}
-                          />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          {platform.name}
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  ))}
-                </div>
+          {game?.image_url && (
+            <div className="relative flex space-x-3 overflow-hidden">
+              <img
+                src={game?.image_url}
+                alt={game?.name}
+                className="object-cover"
+              />
+              <div>
+                <ul className="space-y-1">
+                  <li className="space-x-2">
+                    <span className="text-sm font-semibold">Release date:</span>
+                    <span className="text-sm font-semibold">{game.release_year}</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-sm font-semibold">Platforms:</span>
+                    {game?.platforms?.map(platform => (
+                      <TooltipProvider key={platform.id} delayDuration={200}>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <img
+                              src={platform.logo_url}
+                              style={{ height: 'auto', maxWidth: 24 }}
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {platform.name}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ))}
+                  </li>
+                  <li className="text-sm">
+                    <a 
+                      href={`https://www.igdb.com/games/${game.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 font-medium text-blue-600 hover:text-blue-500"
+                    >
+                      <span>See in IGDB</span>
+                      <ExternalLinkIcon size={16} />
+                    </a>
+                  </li>
+                </ul>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </DialogMain>
         <DialogFooter>
           <Button

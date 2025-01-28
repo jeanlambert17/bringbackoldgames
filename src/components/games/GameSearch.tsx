@@ -37,6 +37,7 @@ export function GameSearch({ onGameSelect }: GameSearchProps) {
     }
 
     try {
+      setGames([])
       setLoading(true)
       setGames(await findIgdbGames(q))
     } catch (error) {
@@ -49,7 +50,7 @@ export function GameSearch({ onGameSelect }: GameSearchProps) {
     } finally {
       setLoading(false)
     }
-  }, 200)
+  }, 600)
 
   const handleSearch = async (q: string) => {
     search(q)

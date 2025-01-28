@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/card'
 import { supabase } from '@/lib/supabase'
 import { type IGame } from '@/types/game'
-import { Skeleton } from './ui/skeleton'
+import { Skeleton } from '../ui/skeleton'
 import { createFixedArray } from '@/utils/array'
 
 interface Props {
@@ -50,35 +50,6 @@ export function GameList({ openVoteModal, voteModalProps }: Props) {
         <Trophy className="w-6 h-6 text-yellow-400" />
         Top Asked Games
       </h2>
-      {/* <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {data.map((game, i) => game? (
-          <Card key={game.id} className="flex w-full">
-            {game.image_url && (
-              <div className="flex overflow-hidden rounded-l-md" style={{ height: 200, width: 150 }}>
-                <img
-                  src={game.image_url}
-                  alt={game.name}
-                />
-              </div>
-            )}
-            <div className="flex flex-col flex-1 truncate">
-              <CardHeader>
-                <CardTitle title={game.name} className="whitespace-pre-wrap">{game.name}</CardTitle>
-                <CardDescription>
-                  Released: {game.release_year || 'Unknown'}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex items-end justify-end flex-1">
-                <span className="text-xl font-bold">
-                  {game.votes}
-                </span>
-              </CardContent>
-            </div>
-          </Card>
-        ) : (
-          <Skeleton key={i} className="h-[200px] w-full" />
-        ))}
-      </div> */}
       <div className="flex flex-col gap-2.5">
         {data.map((game, i) => game ? (
           <div key={game.id} className="flex cursor-pointer gap-x-2">
