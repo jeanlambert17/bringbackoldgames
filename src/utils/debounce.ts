@@ -64,16 +64,17 @@ import { isObject } from './is-object.js'
 
 // eslint-disable-next-line
 export function debounce(func: any, wait: any, options?: any) {
-  let lastArgs, lastThis, maxWait, result, timerId, lastCallTime
-
+  // eslint-disable-next-line
+  let lastArgs: any, lastThis: any, maxWait: any, result: any, timerId: any, lastCallTime: any
+  
   let lastInvokeTime = 0
   let leading = false
   let maxing = false
   let trailing = true
-
+  
   // Bypass `requestAnimationFrame` by explicitly setting `wait=0`.
   const useRAF = !wait && wait !== 0 && typeof global.requestAnimationFrame === 'function'
-
+  
   if (typeof func !== 'function') {
     throw new TypeError('Expected a function')
   }
@@ -84,33 +85,37 @@ export function debounce(func: any, wait: any, options?: any) {
     maxWait = maxing ? Math.max(+options.maxWait || 0, wait) : maxWait
     trailing = 'trailing' in options ? !!options.trailing : trailing
   }
-
-  function invokeFunc(time) {
-    const args = lastArgs
+  
+  // eslint-disable-next-line
+  function invokeFunc(time: any) {
+    const args = lastArgs 
     const thisArg = lastThis
-
+    
     lastArgs = lastThis = undefined
     lastInvokeTime = time
     result = func.apply(thisArg, args)
     return result
   }
-
-  function startTimer(pendingFunc, wait) {
+  
+  // eslint-disable-next-line
+  function startTimer(pendingFunc: any, wait: any) {
     if (useRAF) {
       global.cancelAnimationFrame(timerId)
       return global.requestAnimationFrame(pendingFunc)
     }
     return setTimeout(pendingFunc, wait)
   }
-
-  function cancelTimer(id) {
+  
+  // eslint-disable-next-line
+  function cancelTimer(id: any) {
     if (useRAF) {
       return global.cancelAnimationFrame(id)
     }
     clearTimeout(id)
   }
-
-  function leadingEdge(time) {
+  
+  // eslint-disable-next-line
+  function leadingEdge(time: any) {
     // Reset any `maxWait` timer.
     lastInvokeTime = time
     // Start the timer for the trailing edge.
@@ -118,19 +123,21 @@ export function debounce(func: any, wait: any, options?: any) {
     // Invoke the leading edge.
     return leading ? invokeFunc(time) : result
   }
-
-  function remainingWait(time) {
+  
+  // eslint-disable-next-line
+  function remainingWait(time: any) {
     const timeSinceLastCall = time - lastCallTime
     const timeSinceLastInvoke = time - lastInvokeTime
     const timeWaiting = wait - timeSinceLastCall
-
+    
     return maxing ? Math.min(timeWaiting, maxWait - timeSinceLastInvoke) : timeWaiting
   }
-
-  function shouldInvoke(time) {
+  
+  // eslint-disable-next-line
+  function shouldInvoke(time: any) {
     const timeSinceLastCall = time - lastCallTime
     const timeSinceLastInvoke = time - lastInvokeTime
-
+    
     // Either this is the first call, activity has stopped and we're at the
     // trailing edge, the system time has gone backwards and we're treating
     // it as the trailing edge, or we've hit the `maxWait` limit.
@@ -141,7 +148,7 @@ export function debounce(func: any, wait: any, options?: any) {
       (maxing && timeSinceLastInvoke >= maxWait)
     )
   }
-
+  
   function timerExpired() {
     const time = Date.now()
     if (shouldInvoke(time)) {
@@ -150,10 +157,11 @@ export function debounce(func: any, wait: any, options?: any) {
     // Restart the timer.
     timerId = startTimer(timerExpired, remainingWait(time))
   }
-
-  function trailingEdge(time) {
+  
+  // eslint-disable-next-line
+  function trailingEdge(time: any) {
     timerId = undefined
-
+    
     // Only invoke if we have `lastArgs` which means `func` has been
     // debounced at least once.
     if (trailing && lastArgs) {
@@ -162,7 +170,7 @@ export function debounce(func: any, wait: any, options?: any) {
     lastArgs = lastThis = undefined
     return result
   }
-
+  
   function cancel() {
     if (timerId !== undefined) {
       cancelTimer(timerId)
@@ -170,21 +178,22 @@ export function debounce(func: any, wait: any, options?: any) {
     lastInvokeTime = 0
     lastArgs = lastCallTime = lastThis = timerId = undefined
   }
-
+  
   function flush() {
     return timerId === undefined ? result : trailingEdge(Date.now())
   }
-
+  
   function pending() {
     return timerId !== undefined
   }
-
-  function debounced(...args) {
+  
+  // eslint-disable-next-line
+  function debounced(...args: any[]) {
     const time = Date.now()
     const isInvoking = shouldInvoke(time)
-
+    
     lastArgs = args
-    // @ts-ignore
+    // eslint-disable-next-line
     lastThis = this
     lastCallTime = time
 

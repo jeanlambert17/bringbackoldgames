@@ -14,13 +14,15 @@ export function reduceToMapById<T extends { id?: string; uuid?: string }>(values
   return {}
 }
 // Reduce to map by given field
-export function reduceToMapByField<T>(values: T[] | null | undefined, key: keyof T) {
+export function reduceToMapByField<T extends Record<string, any>>(values: T[] | null | undefined, key: keyof T) { // eslint-disable-line
   if (values) {
     return values.reduce((p, current) => ({ ...p, [current[key as string]]: current }), {})
   }
   return {}
 }
-export function deepReduceToMapByField<T>(values: T[], key: string) {
+
+
+export function deepReduceToMapByField<T extends Record<string, any>>(values: T[], key: string) { // eslint-disable-line
   const keys = key.split('.')
   return values.reduce((p, current) => {
     let value = current
