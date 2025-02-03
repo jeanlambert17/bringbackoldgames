@@ -3,7 +3,8 @@ create table games (
   name text not null,
   votes bigint default 0,
   release_year integer,
-  image_url text
+  cover_url text,
+  summary text
 );
 
 create table platforms (
@@ -13,7 +14,7 @@ create table platforms (
   logo_url text
 );
 
-create table game_platforms (
+create table games_platforms (
   game_id bigint references games(id) on delete cascade,
   platform_id bigint references platforms(id) on delete cascade,
   primary key (game_id, platform_id)

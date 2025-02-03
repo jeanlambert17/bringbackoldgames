@@ -27,7 +27,7 @@ export function GameList({ openVoteModal, voteModalProps }: Props) {
         // add "user_vote" data
         const { data, error } = await supabase
           .from('games')
-          .select('*, platforms ( id, name, abbreviation, logo_url )')
+          .select('*, platforms (id, name, abbreviation, logo_url), genres (id, name)')
           .order('votes', { ascending: false })
           // .limit(20)
         if (error) throw error
@@ -46,18 +46,18 @@ export function GameList({ openVoteModal, voteModalProps }: Props) {
 
   return (
     <div>
-      <h2 className="flex items-center gap-2 mb-4 text-2xl font-bold">
+      <h2 className="flex items-center gap-2 mb-4 text-2xl font-bold dark:text-white">
         <Trophy className="w-6 h-6 text-yellow-400" />
         Top Asked Games
       </h2>
       <div className="flex flex-col gap-2.5">
         {data.map((game, i) => game ? (
           <div key={game.id} className="flex cursor-pointer gap-x-2">
-            <span className="font-medium">{i + 1}.</span>
+            <span className="font-medium dark:text-white">{i + 1}.</span>
             <Card className="flex flex-1 truncate" onClick={() => openVoteModal({ game })}>
-              {game.image_url && (
+              {game.cover_url && (
                 <div className="flex h-20 overflow-hidden rounded-l-md shrink-0">
-                  <img src={game.image_url} alt={game.name} />
+                  <img src={game.cover_url} alt={game.name} />
                 </div>
               )}
               <CardHeader className="truncate">
@@ -74,7 +74,7 @@ export function GameList({ openVoteModal, voteModalProps }: Props) {
             </Card>
           </div>
         ) : (
-          <Skeleton key={i} className="h-[200px] w-full" />
+          <Skeleton key={i} className="h-[82px] w-full" />
         ))}
       </div>
     </div>

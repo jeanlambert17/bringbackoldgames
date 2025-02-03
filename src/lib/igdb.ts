@@ -25,7 +25,7 @@ export const mapIgdbToGame = (game: IGDBGame): IGame => ({
   release_year: game.first_release_date
     ? new Date(game.first_release_date * 1000).getFullYear()
     : 0,
-  image_url: game.cover?.url
+  cover_url: game.cover?.url
     ? `https:${game.cover.url.replace('t_thumb', 't_cover_big')}`
     : undefined,
   platforms: game.platforms?.map(platform => ({
@@ -38,7 +38,7 @@ export const mapIgdbToGame = (game: IGDBGame): IGame => ({
   })),
 })
 
-export async function findIgdbGames(q: string, signal?: AbortSignal): Promise<IGame[]> {
+export async function findIgdbGames(q: string): Promise<IGame[]> {
   try {
     const { data, error } = await supabase.functions.invoke('old-games', {
       body: { q },
@@ -49,7 +49,7 @@ export async function findIgdbGames(q: string, signal?: AbortSignal): Promise<IG
       console.log({ error })
       throw error
     }
-    return data.map(mapIgdbToGame)
+    return data
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
       // Handle abort specifically

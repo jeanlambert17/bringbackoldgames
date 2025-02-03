@@ -79,7 +79,7 @@ export function GameSearch({ onGameSelect }: GameSearchProps) {
             />
             <CommandList className="py-2 max-h-[50vh]">
               <CommandEmpty>
-                {loading ? 'Searching...' : `No games found. ${games.length}`}
+                {loading ? 'Searching...' : 'No games found.'}
               </CommandEmpty>
               <CommandGroup>
                 {games.map((game) => (
@@ -91,9 +91,9 @@ export function GameSearch({ onGameSelect }: GameSearchProps) {
                       setOpen(false)
                     }}
                   >
-                    {game.image_url && (
+                    {game.cover_url && (
                       <img
-                        src={game.image_url}
+                        src={game.cover_url}
                         alt={game.name}
                         className="object-cover w-10 h-10 rounded"
                       />

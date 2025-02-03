@@ -1,13 +1,15 @@
 import { GameSearch } from '@/components/games/GameSearch'
 import { GameList } from '@/components/games/GameList'
 import { Toaster } from '@/components/ui/toaster'
-import { GameVoteDialog } from '@/components/games/GameVoteDialog'
+import { GameVoteModal } from '@/components/games/GameVoteModal'
 import { useModalProps } from './hooks/use-modal-props'
 import { AuthProvider } from './contexts/auth.context'
 import { AppHeader } from './components/layout/AppHeader'
+import { useDarkMode } from './hooks/use-dark-mode'
 
 export function App() {
   const [voteModalProps, openVoteModal] = useModalProps()
+  useDarkMode()
 
   return (
     <AuthProvider>
@@ -17,7 +19,7 @@ export function App() {
           <div className="max-w-xl mb-8">
             <GameSearch onGameSelect={game => openVoteModal({ game })} />
           </div>
-          <GameVoteDialog {...voteModalProps} />
+          <GameVoteModal {...voteModalProps} />
           <GameList
             openVoteModal={openVoteModal}
             voteModalProps={voteModalProps}
