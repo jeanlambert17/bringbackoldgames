@@ -8,8 +8,8 @@ import { AppHeader } from './components/layout/AppHeader'
 import { useDarkMode } from './hooks/use-dark-mode'
 
 export function App() {
-  const [voteModalProps, openVoteModal] = useModalProps()
   useDarkMode()
+  const [voteModalProps, openVoteModal] = useModalProps()
 
   return (
     <AuthProvider>

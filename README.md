@@ -18,6 +18,14 @@
   supabase migration new <NAME>
 ```
 
+##### Deploy edge functions
+
+supabase functions deploy
+
+##### Run migrations on supabase
+
+supabase db push
+
 ### Frontend
 
 ```bash
