@@ -11,7 +11,8 @@ export const AppHeader = () => {
 
   return (
     <header className="mb-8">
-      <div className="flex items-center justify-between mb-4">
+      <nav className="flex items-center justify-between mb-4">
+        <img src="/assets/appicon.svg" alt="BringBackOldGames Icon" width="32" height="32" />
         <h1 className="text-4xl font-bold dark:text-white">
           Bring Back Old Games
         </h1>
@@ -20,7 +21,7 @@ export const AppHeader = () => {
             Logout
           </Button>
         )}
-      </div>
+      </nav>
       <p className="text-muted-foreground">
         Search and vote for the games you&apos;d love to see brought back on modern platforms or that you&apos;d like the devs to remake!
       </p>

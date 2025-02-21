@@ -210,10 +210,10 @@ export function GameVoteModal({ game: _game, game_id, open, onOpenChange }: Game
           <DialogDescription className="mb-6">
             {loading
               ? (
-                <div className="space-y-2">
+                <span className="space-y-2">
                   <Skeleton className="w-full h-4" />
                   <Skeleton className="w-full h-4" />
-                </div>
+                </span>
               )
               : `Express your interest in seeing ${game?.name} on modern platforms as a remake, refactor, or just a port on newer platforms.`
             }
