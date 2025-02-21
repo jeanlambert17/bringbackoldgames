@@ -1,10 +1,10 @@
+import { useEffect } from 'react'
 import { GameSearch } from '@/components/games/GameSearch'
 import { GameList } from '@/components/games/GameList'
 import { GameVoteModal } from '@/components/games/GameVoteModal'
 import { useModalProps } from '../hooks/use-modal-props'
 import { AppHeader } from '../components/layout/AppHeader'
 import { useSearch } from '@tanstack/react-router'
-import { useEffect } from 'react'
 
 export function Home() {
   const [voteModalProps, openVoteModal] = useModalProps()
@@ -16,7 +16,7 @@ export function Home() {
 
   useEffect(() => {
     // Add meta tags dynamically
-    document.title = 'Bring back old games - Vote on Your Favorite Games'
+    document.title = 'Bring Back Old Games - Vote on Your Favorite Games'
     const metaDescription = document.createElement('meta')
     metaDescription.name = 'description'
     metaDescription.content = 'Rank your favorite games that you want to see be remade or ported to modern platforms.'
@@ -25,7 +25,6 @@ export function Home() {
     metaKeywords.name = 'keywords'
     metaKeywords.content = 'game voting, video games, gaming community, game rankings, popular games, remakes, ports, modern platforms, remasters, retro games, old games'
     document.head.appendChild(metaKeywords)
-    // Cleanup function
     return () => {
       document.head.removeChild(metaDescription)
       document.head.removeChild(metaKeywords)
