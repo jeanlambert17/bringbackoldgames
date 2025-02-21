@@ -11,8 +11,8 @@ export const AppHeader = () => {
 
   return (
     <header className="mb-8">
-      <div className="flex items-center justify-between">
-        <h1 className="mb-4 text-4xl font-bold dark:text-white">
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-4xl font-bold dark:text-white">
           Bring Back Old Games
         </h1>
         {user && (

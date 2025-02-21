@@ -45,10 +45,7 @@ export async function findIgdbGames(q: string): Promise<IGame[]> {
       // Not supported until maybe: https://github.com/supabase/functions-js/pull/93
       // abortSignal: signal,
     })
-    if(error) {
-      console.log({ error })
-      throw error
-    }
+    if(error) throw error
     return data
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
@@ -56,6 +53,25 @@ export async function findIgdbGames(q: string): Promise<IGame[]> {
       throw new Error('Search was cancelled')
     }
     console.error('Error fetching games:', error)
+    throw error
+  }
+}
+
+export async function findIgdbGameById(id: string): Promise<IGame> {
+  try {
+    const { data, error } = await supabase.functions.invoke('find-game-by-id', {
+      body: { id },
+      // Not supported until maybe: https://github.com/supabase/functions-js/pull/93
+      // abortSignal: signal,
+    })
+    if(error) throw error
+    return data
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      // Handle abort specifically
+      throw new Error('Game was not found')
+    }
+    console.error('Error fetching game:', error)
     throw error
   }
 }

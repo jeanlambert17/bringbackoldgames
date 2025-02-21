@@ -51,6 +51,9 @@ export function GameList({ openVoteModal, voteModalProps }: Props) {
         Top Asked Games
       </h2>
       <div className="flex flex-col gap-2.5">
+        {data.length === 0 && (
+          <p className="text-sm text-muted-foreground">No games found</p>
+        )}
         {data.map((game, i) => game ? (
           <div key={game.id} className="flex cursor-pointer gap-x-2">
             <span className="font-medium dark:text-white">{i + 1}.</span>

@@ -15,18 +15,58 @@ import { useAuthContext } from '@/contexts/auth.context'
 import { type IGame } from '@/types/game'
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../ui/tooltip'
 import { ExternalLinkIcon } from 'lucide-react'
+import { useAsyncEffect } from '@/hooks/use-async-effect'
+import { findIgdbGameById } from '@/lib/igdb'
+import { Skeleton } from '../ui/skeleton'
+
+const DetailsSkeleton = () => (
+  <div className="flex items-center space-x-2">
+    <Skeleton className="inline-block w-20 h-3.5" />
+    <Skeleton className="inline-block w-20 h-3.5" />
+  </div>
+)
 
 interface GameVoteDialogProps {
+  game_id?: string
   game?: IGame
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
-export function GameVoteModal({ game, open, onOpenChange }: GameVoteDialogProps) {
+export function GameVoteModal({ game: _game, game_id, open, onOpenChange }: GameVoteDialogProps) {
+  const [loading, setLoading] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [internalGame, setInternalGame] = useState<IGame | null>()
   const { toast } = useToast()
   const { user, votes, setVotes } = useAuthContext()
-  const [loading, setLoading] = useState(false)
+  const game = _game || internalGame
   const vote = game ? votes[game.id] : null
+
+  useAsyncEffect(async () => {
+    if (game_id) {
+      try {
+        setLoading(true)
+        const { data } = await supabase.from('games').select('*').eq('id', game_id)
+        if (data && data.length > 0) {
+          setInternalGame(data[0])
+        } else {
+          const game = await findIgdbGameById(game_id)
+          if (game) setInternalGame(game)
+        }
+      } catch (error) {
+        console.error('Error loading game:', error)
+        toast({
+          title: 'Error',
+          description: 'Something went wrong. Please try again.',
+          variant: 'destructive',
+        })
+      } finally {
+        setTimeout(() => {
+          setLoading(false)
+        }, 4000)
+      }
+    }
+  }, [game_id])
 
   const handleVote = async () => {
     try {
@@ -42,7 +82,7 @@ export function GameVoteModal({ game, open, onOpenChange }: GameVoteDialogProps)
       }
 
       if (!game) return
-      setLoading(true)
+      setSaving(true)
       // First, ensure the game exists in our database
       const { error: upsertError } = await supabase
         .from('games')
@@ -67,13 +107,13 @@ export function GameVoteModal({ game, open, onOpenChange }: GameVoteDialogProps)
           platform_id: platform.id
         })))
       if (gamePlatformsError) throw gamePlatformsError
-      
-      if(game.genres && game.genres.length > 0) {
+
+      if (game.genres && game.genres.length > 0) {
         const { error: genresError } = await supabase
           .from('genres')
           .upsert(game.genres)
         if (genresError) throw genresError
-  
+
         const { error: gamesGenresError } = await supabase
           .from('games_genres')
           .upsert(game.genres.map(genre => ({
@@ -83,7 +123,7 @@ export function GameVoteModal({ game, open, onOpenChange }: GameVoteDialogProps)
         if (gamesGenresError) throw gamesGenresError
       }
 
-      if(game.companies && game.companies.length > 0) {
+      if (game.companies && game.companies.length > 0) {
         const { error: genresError } = await supabase
           .from('companies')
           .upsert(game.companies.map(company => ({
@@ -92,7 +132,7 @@ export function GameVoteModal({ game, open, onOpenChange }: GameVoteDialogProps)
             logo_url: company.logo_url,
           })))
         if (genresError) throw genresError
-  
+
         const { error: gamesGenresError } = await supabase
           .from('games_companies')
           .upsert(game.companies.map(company => ({
@@ -148,7 +188,7 @@ export function GameVoteModal({ game, open, onOpenChange }: GameVoteDialogProps)
         variant: 'destructive',
       })
     } finally {
-      setLoading(false)
+      setSaving(false)
     }
   }
 
@@ -156,74 +196,123 @@ export function GameVoteModal({ game, open, onOpenChange }: GameVoteDialogProps)
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogModal aria-describedby="I want this game">
         <DialogHeader>
-          <DialogTitle>I want <span className="text-sky-500">{game?.name}</span> back!</DialogTitle>
+          <DialogTitle className="w-full">
+            {loading ? (
+              <Skeleton className="w-full h-[18px]" />
+            ) : (
+              <>
+                I want <span className="text-sky-500">{game?.name}</span> back!
+              </>
+            )}
+          </DialogTitle>
         </DialogHeader>
         <DialogMain className="">
           <DialogDescription className="mb-6">
-            Express your interest in seeing {game?.name} on modern platforms as a remake, refactor, or just a port on newer platforms.
+            {loading
+              ? (
+                <div className="space-y-2">
+                  <Skeleton className="w-full h-4" />
+                  <Skeleton className="w-full h-4" />
+                </div>
+              )
+              : `Express your interest in seeing ${game?.name} on modern platforms as a remake, refactor, or just a port on newer platforms.`
+            }
           </DialogDescription>
-          {game?.cover_url && (
-            <div className="relative flex space-x-3 overflow-hidden">
+          <div className="relative flex space-x-3 overflow-hidden">
+            {loading ? (
+              <Skeleton className="w-[264px] h-[352px]" />
+            ) : game?.cover_url? (
               <img
-                src={game?.cover_url}
-                alt={game?.name}
+                src={game.cover_url}
+                alt={game.name}
                 className="object-cover"
               />
-              <div className="flex-1">
-                {game.summary && (
-                  <p className="mb-1.5 text-xs" title={game.summary}>
-                    {game.summary.length > 250? `${game.summary.slice(0, 250)}...` : game.summary}
-                  </p>
-                )}
-                <ul className="space-y-1.5">
-                  <li className="space-x-2 text-sm">
-                    <span className="font-semibold">Release date:</span>
-                    <span>{game.release_year}</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-sm font-semibold">Platforms:</span>
-                    {game?.platforms?.map(platform => (
-                      <TooltipProvider key={platform.id} delayDuration={200}>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <img
-                              src={platform.logo_url}
-                              style={{ height: '20px', maxWidth: 'auto' }}
-                            />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            {platform.name}
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    ))}
-                  </li>
-                  {game.genres && game.genres?.length > 0 && (
-                    <li className="flex items-start gap-2 text-sm">
-                      <span className="font-semibold">Genres:</span>
-                      <span>{game.genres.map(genre => genre.name).join(', ')}</span>
-                    </li>
+            ) : null}
+            <div className="flex-1">
+              {loading ? (
+                <div className="space-y-1.5 mb-1.5">
+                  <Skeleton className="w-full h-3" />
+                  <Skeleton className="w-full h-3" />
+                  <Skeleton className="w-full h-3" />
+                  <Skeleton className="w-full h-3" />
+                  <Skeleton className="w-full h-3" />
+                  <Skeleton className="w-full h-3" />
+                </div>
+              ) : game?.summary ? (
+                <p className="mb-1.5 text-xs" title={game?.summary}>
+                  {game.summary.length > 250 ? `${game.summary.slice(0, 250)}...` : game.summary}
+                </p>
+              ) : null}
+              <ul className="space-y-1.5">
+                <li className="space-x-2 text-sm">
+                  {loading ? (
+                    <DetailsSkeleton />
+                  ) : (
+                    <>
+                      <span className="font-semibold">Release date:</span>
+                      <span>{game?.release_year}</span>
+                    </>
                   )}
-                </ul>
-                <a
-                  href={`https://www.igdb.com/games/${game.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 mt-2 text-sm font-medium text-blue-600 hover:text-blue-500"
-                >
-                  <span>See in IGDB</span>
-                  <ExternalLinkIcon size={16} />
-                </a>
-              </div>
+                </li>
+                <li className="flex items-start gap-2 text-sm">
+                  {loading ? (
+                    <DetailsSkeleton />
+                  ) : (
+                    <>
+                      <span className="font-semibold">Platforms:</span>
+                      {game?.platforms?.map(platform => (
+                        <TooltipProvider key={platform.id} delayDuration={200}>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <img
+                                src={platform.logo_url}
+                                style={{ height: '20px', maxWidth: 'auto' }}
+                              />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              {platform.name}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      ))}
+                    </>
+                  )}
+                </li>
+                <li className="flex items-start gap-2 text-sm">
+                  {loading ? (
+                    <DetailsSkeleton />
+                  ) : (
+                    <>
+                      <span className="font-semibold">Genres:</span>
+                      <span>{game?.genres?.map(genre => genre.name).join(', ')}</span>
+                    </>
+                  )}
+                </li>
+              </ul>
+              <a
+                href={`https://www.igdb.com/games/${game?.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 mt-2 text-sm font-medium text-blue-600 hover:text-blue-500"
+              >
+                {loading ? (
+                  <Skeleton className="inline-block h-5 w-28" />
+                ) : (
+                  <>
+                    <span>See in IGDB</span>
+                    <ExternalLinkIcon size={16} />
+                  </>
+                )}
+              </a>
             </div>
-          )}
+          </div>
         </DialogMain>
         <DialogFooter>
           <Button
             onClick={handleVote}
-            disabled={loading || !!vote}
+            disabled={saving || !!vote || !game}
           >
-            {loading ? 'Processing...' : vote ? `You've already requested this game` : 'I want this game back!'}
+            {saving ? 'Processing...' : loading? 'Loading...' : vote ? `You've already requested this game` : 'I want this game back!'}
           </Button>
         </DialogFooter>
       </DialogModal>
