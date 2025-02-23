@@ -14,8 +14,8 @@ export const AppHeader = () => {
   return (
     <header className="mb-8">
       <nav className="flex items-center mb-4">
-        <img src={appIcon} alt="BringBackOldGames Icon" width="32" height="32" />
-        <h1 className="ml-4 text-4xl font-bold truncate dark:text-white">
+        <img src={appIcon} alt="BringBackOldGames Icon" width="44" height="44" />
+        <h1 className="ml-3 text-4xl font-bold truncate dark:text-white">
           Bring Back Old Games
         </h1>
         {user && (

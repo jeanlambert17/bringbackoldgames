@@ -218,14 +218,14 @@ export function GameVoteModal({ game: _game, game_id, open, onOpenChange }: Game
               : `Express your interest in seeing ${game?.name} on modern platforms as a remake, refactor, or just a port on newer platforms.`
             }
           </DialogDescription>
-          <div className="relative flex space-x-3 overflow-hidden">
+          <div className="relative flex flex-col space-y-3 overflow-hidden sm:space-y-0 sm:space-x-3 sm:flex-row">
             {loading ? (
-              <Skeleton className="w-[264px] h-[352px]" />
-            ) : game?.cover_url? (
+              <Skeleton className="w-[264px] h-[352px] self-center" />
+            ) : game?.cover_url ? (
               <img
                 src={game.cover_url}
                 alt={game.name}
-                className="object-cover"
+                className="self-center object-cover"
               />
             ) : null}
             <div className="flex-1">
@@ -312,7 +312,7 @@ export function GameVoteModal({ game: _game, game_id, open, onOpenChange }: Game
             onClick={handleVote}
             disabled={saving || !!vote || !game}
           >
-            {saving ? 'Processing...' : loading? 'Loading...' : vote ? `You've already requested this game` : 'I want this game back!'}
+            {saving ? 'Processing...' : loading ? 'Loading...' : vote ? `You've already requested this game` : 'I want this game back!'}
           </Button>
         </DialogFooter>
       </DialogModal>
