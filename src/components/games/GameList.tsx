@@ -24,7 +24,6 @@ export function GameList({ openVoteModal, voteModalProps }: Props) {
     if (voteModalProps?.open) return
     async function fetchTopGames() {
       try {
-        // add "user_vote" data
         const { data, error } = await supabase
           .from('games')
           .select('*, platforms (id, name, abbreviation, logo_url), genres (id, name)')
@@ -38,7 +37,6 @@ export function GameList({ openVoteModal, voteModalProps }: Props) {
         setLoading(false)
       }
     }
-
     fetchTopGames()
   }, [voteModalProps?.open])
 

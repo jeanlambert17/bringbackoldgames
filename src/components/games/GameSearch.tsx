@@ -27,9 +27,10 @@ import { isAbortError } from '@/utils/http'
 
 interface GameSearchProps {
   onGameSelect: (game: IGame) => void
+  className?: string
 }
 
-export function GameSearch({ onGameSelect }: GameSearchProps) {
+export function GameSearch({ onGameSelect, className }: GameSearchProps) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [games, setGames] = useState<IGame[]>([])
@@ -59,7 +60,7 @@ export function GameSearch({ onGameSelect }: GameSearchProps) {
   }, 500)
 
   return (
-    <div className="w-full max-w-sm">
+    <div className={clsx('w-full max-w-sm', className)}>
       <Button
         variant="outline"
         className="justify-start w-full text-muted-foreground"
