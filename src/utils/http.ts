@@ -7,6 +7,10 @@ export const attempt = async <T = unknown>(req: Promise<T>) => {
   }
 }
 
+export const isAbortError = (err: unknown) => {
+  return err instanceof Error && err.name === 'AbortError'
+}
+
 // export const isTimeout = (err: unknown) => {
 //   return (
 //     !!err &&

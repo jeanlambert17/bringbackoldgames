@@ -23,6 +23,7 @@ import debounce from '@/utils/debounce'
 import { useAsyncEffect } from '@/hooks/use-async-effect'
 import { Skeleton } from '../ui/skeleton'
 import clsx from 'clsx'
+import { isAbortError } from '@/utils/http'
 
 interface GameSearchProps {
   onGameSelect: (game: IGame) => void
@@ -37,15 +38,14 @@ export function GameSearch({ onGameSelect }: GameSearchProps) {
 
   useAsyncEffect(async () => {
     try {
-      // setGames([])
       setLoading(true)
       setGames(await findIgdbGames(search))
       startTransition(() => {
         setLoading(false)
       })
-    } catch (error) {
+    } catch (err) {
+      if(isAbortError(err)) return
       setLoading(false)
-      console.log(error)
       toast({
         title: 'Error',
         description: 'Failed to search games. Please try again.',

@@ -1,5 +1,6 @@
 import { IGame } from '@/types/game'
 import { supabase } from './supabase'
+
 interface IGDBGame {
   id: number
   cover: {
@@ -43,17 +44,12 @@ export async function findIgdbGames(q: string): Promise<IGame[]> {
     const { data, error } = await supabase.functions.invoke('old-games', {
       body: { q },
       // Not supported until maybe: https://github.com/supabase/functions-js/pull/93
-      // abortSignal: signal,
     })
     if(error) throw error
     return data
-  } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      // Handle abort specifically
-      throw new Error('Search was cancelled')
-    }
-    console.error('Error fetching games:', error)
-    throw error
+  } catch (err) {
+    console.error('Error fetching games:', err)
+    throw err
   }
 }
 
@@ -62,16 +58,11 @@ export async function findIgdbGameById(id: string): Promise<IGame> {
     const { data, error } = await supabase.functions.invoke('find-game-by-id', {
       body: { id },
       // Not supported until maybe: https://github.com/supabase/functions-js/pull/93
-      // abortSignal: signal,
     })
     if(error) throw error
     return data
-  } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      // Handle abort specifically
-      throw new Error('Game was not found')
-    }
-    console.error('Error fetching game:', error)
-    throw error
+  } catch (err) {
+    console.error('Error fetching specificgame:', err)
+    throw err
   }
 }
