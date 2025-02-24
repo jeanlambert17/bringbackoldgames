@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { startTransition, useState } from 'react'
 import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -14,11 +14,15 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
+  CommandLoading
 } from '@/components/ui/command'
 import { findIgdbGames } from '@/lib/igdb'
 import { useToast } from '@/hooks/use-toast'
 import { type IGame } from '@/types/game'
 import debounce from '@/utils/debounce'
+import { useAsyncEffect } from '@/hooks/use-async-effect'
+import { Skeleton } from '../ui/skeleton'
+import clsx from 'clsx'
 
 interface GameSearchProps {
   onGameSelect: (game: IGame) => void
@@ -28,33 +32,31 @@ export function GameSearch({ onGameSelect }: GameSearchProps) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [games, setGames] = useState<IGame[]>([])
+  const [search, setSearch] = useState('')
   const { toast } = useToast()
-  
-  const search = debounce(async (q: string) => {
-    if (q.length < 2) {
-      setGames([])
-      return
-    }
 
+  useAsyncEffect(async () => {
     try {
-      setGames([])
+      // setGames([])
       setLoading(true)
-      setGames(await findIgdbGames(q))
+      setGames(await findIgdbGames(search))
+      startTransition(() => {
+        setLoading(false)
+      })
     } catch (error) {
+      setLoading(false)
       console.log(error)
       toast({
         title: 'Error',
         description: 'Failed to search games. Please try again.',
         variant: 'destructive',
       })
-    } finally {
-      setLoading(false)
     }
-  }, 600)
+  }, [search])
 
-  const handleSearch = async (q: string) => {
-    search(q)
-  }
+  const handleSearch = debounce(async (q: string) => {
+    setSearch(q)
+  }, 500)
 
   return (
     <div className="w-full max-w-sm">
@@ -78,9 +80,12 @@ export function GameSearch({ onGameSelect }: GameSearchProps) {
               autoFocus
             />
             <CommandList className="py-2 max-h-[50vh]">
-              <CommandEmpty>
-                {loading ? 'Searching...' : 'No games found.'}
-              </CommandEmpty>
+              {!loading && <CommandEmpty>No games found.</CommandEmpty>}
+              {loading && games.length === 0 && (
+                <CommandLoading>
+                  Searching...
+                </CommandLoading>
+              )}
               <CommandGroup>
                 {games.map((game) => (
                   <CommandItem
@@ -91,17 +96,19 @@ export function GameSearch({ onGameSelect }: GameSearchProps) {
                       setOpen(false)
                     }}
                   >
-                    {game.cover_url && (
+                    {loading? <Skeleton className="w-10 h-10 rounded" /> : game.cover_url? (
                       <img
                         src={game.cover_url}
                         alt={game.name}
                         className="object-cover w-10 h-10 rounded"
                       />
-                    )}
-                    <div className="flex flex-col">
-                      <span className="font-medium">{game.name}</span>
+                    ) : null}
+                    <div className={clsx('flex flex-col flex-1', loading? 'space-y-2' : '')}>
+                      <span className="font-medium">
+                        {loading? <Skeleton className="w-full h-4" /> : game.name}
+                      </span>
                       <span className="text-sm text-muted-foreground">
-                        {game.release_year || 'Release date unknown'}
+                        {loading? <Skeleton className="w-full h-4" /> : (game.release_year || 'Release date unknown')}
                       </span>
                     </div>
                   </CommandItem>
