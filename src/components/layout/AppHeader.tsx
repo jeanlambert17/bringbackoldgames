@@ -26,7 +26,7 @@ export const AppHeader = () => {
         )}
       </nav>
       <p className="text-muted-foreground">
-        Search and rank the games you want to see brought back on modern platforms or that you&apos;d like the developers to remake!
+        Search for your favorite games and rank the ones you&apos;d love to see remade, remastered, or ported to modern platforms!
       </p>
     </header>
   )
