@@ -5,6 +5,7 @@ import { GameVoteModal } from '@/components/games/GameVoteModal'
 import { useModalProps } from '../hooks/use-modal-props'
 import { AppHeader } from '../components/layout/AppHeader'
 import { useSearch } from '@tanstack/react-router'
+import { AppFooter } from '@/components/layout/AppFooter'
 
 export function Home() {
   const [voteModalProps, openVoteModal] = useModalProps()
@@ -23,6 +24,7 @@ export function Home() {
         openVoteModal={openVoteModal}
         voteModalProps={voteModalProps}
       />
+      <AppFooter />
     </div>
   )
 }
