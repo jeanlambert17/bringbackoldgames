@@ -28,7 +28,7 @@ export function GameList({ openVoteModal, voteModalProps }: Props) {
           .from('games')
           .select('*, platforms (id, name, abbreviation, logo_url), genres (id, name)')
           .order('votes', { ascending: false })
-          // .limit(20)
+          .limit(1)
         if (error) throw error
         setGames(data || [])
       } catch (error) {
@@ -57,11 +57,11 @@ export function GameList({ openVoteModal, voteModalProps }: Props) {
             <span className="font-medium dark:text-white">{i + 1}.</span>
             <Card className="flex flex-1 truncate" onClick={() => openVoteModal({ game })}>
               {game.cover_url && (
-                <div className="flex h-20 overflow-hidden w-fit rounded-l-md">
-                  <img src={game.cover_url} alt={game.name} />
+                <div className="h-20 overflow-hidden w-fit rounded-l-md">
+                  <img className="w-auto h-full" src={game.cover_url} alt={game.name} />
                 </div>
               )}
-              <CardHeader className="truncate">
+              <CardHeader className="flex-1 truncate">
                 <CardTitle title={game.name} className="truncate">
                   {game.name}
                 </CardTitle>

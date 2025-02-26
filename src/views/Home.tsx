@@ -16,7 +16,7 @@ export function Home() {
   }, [game_id, openVoteModal])
 
   return (
-    <div className="px-6 py-10 md:px-8">
+    <div className="flex flex-col min-h-screen px-6 py-10 md:px-8">
       <AppHeader />
       <GameSearch onGameSelect={game => openVoteModal({ game })} className="mb-8" />
       <GameVoteModal {...voteModalProps} />

@@ -9,10 +9,7 @@ export function RootLayout() {
   
   return (
     <AuthProvider>
-      <div className="min-h-screen bg-background">
-        <Outlet />
-        {/* <TanStackRouterDevtools /> */}
-      </div>
+      <Outlet />
       <Toaster />
     </AuthProvider>
   )

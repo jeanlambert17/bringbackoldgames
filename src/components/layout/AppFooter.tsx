@@ -87,7 +87,7 @@ const navigation = {
 export function AppFooter() {
   
   return (
-    <footer className="mt-16 -mx-8 -mb-8">
+    <footer className="pt-16 mt-auto -mx-8 -mb-8">
       <div className="px-6 pt-8 pb-8 mx-auto lg:px-8">
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="flex space-x-4">
