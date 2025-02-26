@@ -57,7 +57,7 @@ export function GameList({ openVoteModal, voteModalProps }: Props) {
             <span className="font-medium dark:text-white">{i + 1}.</span>
             <Card className="flex flex-1 truncate" onClick={() => openVoteModal({ game })}>
               {game.cover_url && (
-                <div className="flex h-20 overflow-hidden rounded-l-md shrink-0">
+                <div className="flex h-20 overflow-hidden rounded-l-md">
                   <img src={game.cover_url} alt={game.name} />
                 </div>
               )}
