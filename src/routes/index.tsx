@@ -10,11 +10,9 @@ const indexRoute = createRoute({
   path: '/',
   getParentRoute: () => rootRoute,
   component: Home,
-  validateSearch: (search: Record<string, unknown>) => {
-    return {
-      game_id: search.game_id as string | undefined,
-    }
-  },
+  validateSearch: (search: Record<string, unknown>) => ({
+    game_id: search.game_id as string | undefined,
+  }),
 })
 
 const routeTree = rootRoute.addChildren([indexRoute])

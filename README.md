@@ -2,11 +2,6 @@
 
 An app for ranking your favorite games that you want to see be remade or ported to modern platforms.
 
-## Features
-
-- Rank your favorite games.
-- Responsive design for all devices.
-
 ## Getting Started
 
 ### Prerequisites
@@ -36,16 +31,26 @@ An app for ranking your favorite games that you want to see be remade or ported 
   supabase migration new <NAME>
 ```
 
-##### Deploy edge functions
+##### Apply pending migration files
+
+<https://supabase.com/docs/reference/cli/supabase-migration-up>
 
 ```bash
-  supabase functions deploy
+  supabase migration up
 ```
 
-##### Run migrations on supabase
+##### Run migrations on supabase REMOTE
 
 ```bash
   supabase db push
+```
+
+#### Edge functions
+
+##### Deploy
+
+```bash
+  supabase functions deploy
 ```
 
 ### Frontend
