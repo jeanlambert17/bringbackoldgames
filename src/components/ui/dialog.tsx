@@ -44,7 +44,9 @@ const DialogModal = React.forwardRef<
       )}
       {...props}
     >
+      <div className="overflow-y-auto max-h-[95dvh]">
       {children}
+      </div>
     </DialogPrimitive.Content>
   </DialogPortal>
 ))
@@ -57,7 +59,7 @@ const DialogHeader = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      'flex items-center px-4 py-5 border-b',
+      'flex items-center px-4 py-5 border-b sticky top-0 bg-background',
       className
     )}
     {...props}
