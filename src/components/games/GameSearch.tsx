@@ -1,4 +1,4 @@
-import { startTransition, useCallback, useEffect, useState } from 'react'
+import { startTransition, useCallback, useEffect, useRef, useState } from 'react'
 import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -31,6 +31,7 @@ interface GameSearchProps {
 }
 
 export function GameSearch({ onGameSelect, className }: GameSearchProps) {
+  const inputRef = useRef<HTMLInputElement>(null)
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [games, setGames] = useState<IGame[]>([])
@@ -87,9 +88,11 @@ export function GameSearch({ onGameSelect, className }: GameSearchProps) {
                 autoFocus
                 placeholder="Search games..."
                 value={text}
+                ref={inputRef}
                 onValueChange={setText}
-                onClear={() => {
+                onClear={text === '' ? undefined : () => {
                   setText('')
+                  inputRef.current?.focus()
                 }}
               />
               <CommandList className="py-2 max-h-[50vh]">
