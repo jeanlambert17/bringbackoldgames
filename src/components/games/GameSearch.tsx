@@ -1,4 +1,4 @@
-import { startTransition, useState } from 'react'
+import { startTransition, useCallback, useEffect, useState } from 'react'
 import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -22,8 +22,8 @@ import { type IGame } from '@/types/game'
 import debounce from '@/utils/debounce'
 import { useAsyncEffect } from '@/hooks/use-async-effect'
 import { Skeleton } from '../ui/skeleton'
-import clsx from 'clsx'
 import { isAbortError } from '@/utils/http'
+import { clsx } from '@/lib/utils'
 
 interface GameSearchProps {
   onGameSelect: (game: IGame) => void
@@ -34,8 +34,20 @@ export function GameSearch({ onGameSelect, className }: GameSearchProps) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [games, setGames] = useState<IGame[]>([])
+  const [text, setText] = useState('')
   const [search, setSearch] = useState('')
   const { toast } = useToast()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debounced = useCallback(debounce(async (q: string) => {
+    setSearch(q)
+  }, 500), [])
+
+
+
+  useEffect(() => {
+    debounced.cancel()
+    debounced(text)
+  }, [text, debounced])
 
   useAsyncEffect(async () => {
     try {
@@ -45,7 +57,7 @@ export function GameSearch({ onGameSelect, className }: GameSearchProps) {
         setLoading(false)
       })
     } catch (err) {
-      if(isAbortError(err)) return
+      if (isAbortError(err)) return
       setLoading(false)
       toast({
         title: 'Error',
@@ -54,10 +66,6 @@ export function GameSearch({ onGameSelect, className }: GameSearchProps) {
       })
     }
   }, [search])
-
-  const handleSearch = debounce(async (q: string) => {
-    setSearch(q)
-  }, 500)
 
   return (
     <div className={clsx('w-full max-w-sm', className)}>
@@ -71,52 +79,56 @@ export function GameSearch({ onGameSelect, className }: GameSearchProps) {
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogModal>
-          <DialogHeader>
-            <DialogTitle>Search for games</DialogTitle>
-          </DialogHeader>
-          <Command shouldFilter={false}>
-            <CommandInput
-              placeholder="Search games..."
-              onValueChange={handleSearch}
-              autoFocus
-            />
-            <CommandList className="py-2 max-h-[50vh]">
-              {!loading && <CommandEmpty>No games found.</CommandEmpty>}
-              {loading && games.length === 0 && (
-                <CommandLoading>
-                  Searching...
-                </CommandLoading>
-              )}
-              <CommandGroup>
-                {games.map((game) => (
-                  <CommandItem
-                    key={game.id}
-                    className="flex items-center gap-2 px-3"
-                    onSelect={() => {
-                      onGameSelect(game)
-                      setOpen(false)
-                    }}
-                  >
-                    {loading? <Skeleton className="w-10 h-10 rounded" /> : game.cover_url? (
-                      <img
-                        src={game.cover_url}
-                        alt={game.name}
-                        className="object-cover w-10 h-10 rounded"
-                      />
-                    ) : null}
-                    <div className={clsx('flex flex-col flex-1', loading? 'space-y-2' : '')}>
-                      <span className="font-medium">
-                        {loading? <Skeleton className="w-full h-4" /> : game.name}
-                      </span>
-                      <span className="text-sm text-muted-foreground">
-                        {loading? <Skeleton className="w-full h-4" /> : (game.release_year || 'Release date unknown')}
-                      </span>
-                    </div>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
+            <DialogHeader>
+              <DialogTitle>Search for games</DialogTitle>
+            </DialogHeader>
+            <Command shouldFilter={false}>
+              <CommandInput
+                autoFocus
+                placeholder="Search games..."
+                value={text}
+                onValueChange={setText}
+                onClear={() => {
+                  setText('')
+                }}
+              />
+              <CommandList className="py-2 max-h-[50vh]">
+                {!loading && <CommandEmpty>No games found.</CommandEmpty>}
+                {loading && games.length === 0 && (
+                  <CommandLoading>
+                    Searching...
+                  </CommandLoading>
+                )}
+                <CommandGroup>
+                  {games.map((game) => (
+                    <CommandItem
+                      key={game.id}
+                      className="flex items-center gap-2 px-3"
+                      onSelect={() => {
+                        onGameSelect(game)
+                        setOpen(false)
+                      }}
+                    >
+                      {loading ? <Skeleton className="w-10 h-10 rounded" /> : game.cover_url ? (
+                        <img
+                          src={game.cover_url}
+                          alt={game.name}
+                          className="object-cover w-10 h-10 rounded"
+                        />
+                      ) : null}
+                      <div className={clsx('flex flex-col flex-1', loading ? 'space-y-2' : '')}>
+                        <span className="font-medium">
+                          {loading ? <Skeleton className="w-full h-4" /> : game.name}
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          {loading ? <Skeleton className="w-full h-4" /> : (game.release_year || 'Release date unknown')}
+                        </span>
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
         </DialogModal>
       </Dialog>
     </div>

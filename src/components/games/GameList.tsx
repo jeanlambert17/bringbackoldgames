@@ -17,7 +17,7 @@ const PAGE_SIZE = 100
 
 interface Props {
   openVoteModal: ({ game }: { game: IGame }) => void
-  voteModalProps?: { open: boolean }
+  voteModalProps?: { open: boolean, game?: IGame }
 }
 
 
@@ -58,29 +58,33 @@ export function GameList({ openVoteModal, voteModalProps }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [voteModalProps?.open])
 
-  const GameItem = (index: number, game: IGame) => (
-    <article className="flex cursor-pointer gap-x-2 px-0.5 py-1">
-      <span className="font-medium dark:text-white">{index + 1}.</span>
-      <Card className="flex flex-1 truncate" onClick={() => openVoteModal({ game })}>
-        {game.cover_url && (
-          <div className="h-20 overflow-hidden w-fit rounded-l-md">
-            <img className="w-auto h-full" src={game.cover_url} alt={game.name} />
-          </div>
-        )}
-        <CardHeader className="flex-1 truncate">
-          <CardTitle title={game.name} className="truncate">
-            {game.name}
-          </CardTitle>
-          <CardDescription className="text-sm mt-0.5">
-            {game.release_year}
-          </CardDescription>
-        </CardHeader>
-        <span className="flex items-center ml-auto mr-4 font-semibold">
-          {game.votes}
-        </span>
-      </Card>
-    </article>
-  )
+  const GameItem = (index: number, game: IGame) => {
+    // if(game.id === voteModalProps?.game?.id && voteModalProps?.open) return <div className="h-20" />
+
+    return (
+      <article className="flex cursor-pointer gap-x-2 px-0.5 py-1">
+        <span className="font-medium dark:text-white">{index + 1}.</span>
+        <Card className="flex flex-1 truncate" onClick={() => openVoteModal({ game })}>
+          {game.cover_url && (
+            <div className="h-20 overflow-hidden w-fit rounded-l-md">
+              <img className="w-auto h-full" src={game.cover_url} alt={game.name} />
+            </div>
+          )}
+          <CardHeader className="flex-1 truncate">
+            <CardTitle title={game.name} className="truncate">
+              {game.name}
+            </CardTitle>
+            <CardDescription className="text-sm mt-0.5">
+              {game.release_year}
+            </CardDescription>
+          </CardHeader>
+          <span className="flex items-center ml-auto mr-4 font-semibold">
+            {game.votes}
+          </span>
+        </Card>
+      </article>
+    )
+  }
 
   const LoadingItem = (index: number) => (
     <Skeleton key={index} className="h-[82px] w-full my-1" />
@@ -90,7 +94,6 @@ export function GameList({ openVoteModal, voteModalProps }: Props) {
     <main>
       <h2 className="flex items-center gap-2 mb-4 text-2xl font-bold dark:text-white">
         <Trophy className="w-6 h-6 text-yellow-400" />
-        Top Asked Games
       </h2>
       <section aria-label="Game list">
         {loading && games.length === 0 ? (

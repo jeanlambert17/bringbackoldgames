@@ -1,9 +1,10 @@
 import * as React from 'react'
 import { type DialogProps } from '@radix-ui/react-dialog'
-import { MagnifyingGlassIcon } from '@radix-ui/react-icons'
 import { Command as CommandPrimitive } from 'cmdk'
 import { cn } from '@/lib/utils'
 import { Dialog, DialogModal } from '@/components/ui/dialog'
+import { SearchIcon, X } from 'lucide-react'
+import { Button } from './button'
 
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
@@ -36,10 +37,12 @@ const CommandDialog = ({ children, ...props }: DialogProps) => {
 
 const CommandInput = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Input>,
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input> & {
+    onClear?: () => void
+  }
+>(({ className, onClear, ...props }, ref) => (
   <div className="flex items-center px-3 border-b" cmdk-input-wrapper="">
-    <MagnifyingGlassIcon className="w-4 h-4 mr-2 opacity-50 shrink-0" />
+    <SearchIcon size="1rem" className="mr-2 shrink-0" />
     <CommandPrimitive.Input
       ref={ref}
       className={cn(
@@ -48,6 +51,11 @@ const CommandInput = React.forwardRef<
       )}
       {...props}
     />
+    {onClear && (
+      <Button variant="ghost" size="icon-sm" className="ml-2" onClick={onClear}>
+        <X size="1rem" className="shrink-0" />
+      </Button>
+    )}
   </div>
 ))
 

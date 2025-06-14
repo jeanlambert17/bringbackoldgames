@@ -195,127 +195,135 @@ export function GameVoteModal({ game: _game, game_id, open, onOpenChange }: Game
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogModal aria-describedby="I want this game">
-        <DialogHeader>
-          <DialogTitle className="w-full">
-            {loading ? (
-              <Skeleton className="w-full h-[18px]" />
-            ) : (
-              <>
-                I want <span className="text-sky-500">{game?.name}</span> back!
-              </>
-            )}
-          </DialogTitle>
-        </DialogHeader>
-        <DialogMain className="">
-          <DialogDescription className="mb-6">
-            {loading
-              ? (
-                <span className="space-y-2">
-                  <Skeleton className="w-full h-4" />
-                  <Skeleton className="w-full h-4" />
-                </span>
-              )
-              : `Express your interest in seeing ${game?.name} on modern platforms as a remake, refactor, or just a port on newer platforms.`
-            }
-          </DialogDescription>
-          <div className="relative flex flex-col space-y-3 overflow-hidden sm:space-y-0 sm:space-x-3 sm:flex-row">
-            {loading ? (
-              <Skeleton className="w-[264px] h-[352px] self-center" />
-            ) : game?.cover_url ? (
-              <img
-                src={game.cover_url}
-                alt={game.name}
-                className="self-center object-cover"
-              />
-            ) : null}
-            <div className="flex-1">
-              {loading ? (
-                <div className="space-y-1.5 mb-1.5">
-                  <Skeleton className="w-full h-3" />
-                  <Skeleton className="w-full h-3" />
-                  <Skeleton className="w-full h-3" />
-                  <Skeleton className="w-full h-3" />
-                  <Skeleton className="w-full h-3" />
-                  <Skeleton className="w-full h-3" />
-                </div>
-              ) : game?.summary ? (
-                <p className="mb-1.5 text-xs" title={game?.summary}>
-                  {game.summary.length > 250 ? `${game.summary.slice(0, 250)}...` : game.summary}
-                </p>
-              ) : null}
-              <ul className="space-y-1.5">
-                <li className="space-x-2 text-sm">
-                  {loading ? (
-                    <DetailsSkeleton />
-                  ) : (
-                    <>
-                      <span className="font-semibold">Release date:</span>
-                      <span>{game?.release_year}</span>
-                    </>
-                  )}
-                </li>
-                <li className="flex items-start gap-2 text-sm">
-                  {loading ? (
-                    <DetailsSkeleton />
-                  ) : (
-                    <>
-                      <span className="font-semibold">Platforms:</span>
-                      {game?.platforms?.map(platform => (
-                        <TooltipProvider key={platform.id} delayDuration={200}>
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <img
-                                src={platform.logo_url}
-                                style={{ height: '20px', maxWidth: 'auto' }}
-                              />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              {platform.name}
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      ))}
-                    </>
-                  )}
-                </li>
-                <li className="flex items-start gap-2 text-sm">
-                  {loading ? (
-                    <DetailsSkeleton />
-                  ) : (
-                    <>
-                      <span className="font-semibold">Genres:</span>
-                      <span>{game?.genres?.map(genre => genre.name).join(', ')}</span>
-                    </>
-                  )}
-                </li>
-              </ul>
-              <a
-                href={`https://www.igdb.com/games/${game?.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 mt-2 text-sm font-medium text-blue-600 hover:text-blue-500"
-              >
+        <div
+          className="overflow-y-auto max-h-[95dvh]"
+        >
+
+
+          <DialogHeader>
+            <DialogTitle className="w-full" asChild>
+              <h2>
                 {loading ? (
-                  <Skeleton className="inline-block h-5 w-28" />
+                  <Skeleton className="w-full h-[18px]" />
                 ) : (
                   <>
-                    <span>See in IGDB</span>
-                    <ExternalLinkIcon size={16} />
+                    I want <span className="text-sky-500">{game?.name}</span> back!
                   </>
                 )}
-              </a>
+              </h2>
+            </DialogTitle>
+          </DialogHeader>
+          <DialogMain className="">
+            <DialogDescription className="mb-5">
+              {loading
+                ? (
+                  <span className="space-y-2">
+                    <Skeleton className="w-full h-4" />
+                    <Skeleton className="w-full h-4" />
+                  </span>
+                )
+                : `Express your interest in seeing ${game?.name} on modern platforms as a remake, refactor, or just a port on newer platforms.`
+              }
+            </DialogDescription>
+            <div className="relative flex flex-col space-y-3 overflow-hidden sm:space-y-0 sm:space-x-3 sm:flex-row">
+              {loading ? (
+                <Skeleton className="w-[264px] h-[352px] self-center" />
+              ) : game?.cover_url ? (
+                <img
+                  src={game.cover_url}
+                  alt={game.name}
+                  className="self-center object-cover"
+                />
+              ) : null}
+              <div className="flex-1">
+                {loading ? (
+                  <div className="space-y-1.5 mb-1.5">
+                    <Skeleton className="w-full h-3" />
+                    <Skeleton className="w-full h-3" />
+                    <Skeleton className="w-full h-3" />
+                    <Skeleton className="w-full h-3" />
+                    <Skeleton className="w-full h-3" />
+                    <Skeleton className="w-full h-3" />
+                  </div>
+                ) : game?.summary ? (
+                  <p className="mb-1.5 text-xs" title={game?.summary}>
+                    {game.summary.length > 250 ? `${game.summary.slice(0, 250)}...` : game.summary}
+                  </p>
+                ) : null}
+                <ul className="space-y-1.5">
+                  <li className="space-x-2 text-sm">
+                    {loading ? (
+                      <DetailsSkeleton />
+                    ) : (
+                      <>
+                        <span className="font-semibold">Release date:</span>
+                        <span>{game?.release_year}</span>
+                      </>
+                    )}
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    {loading ? (
+                      <DetailsSkeleton />
+                    ) : (
+                      <>
+                        <span className="font-semibold">Platforms:</span>
+                        {game?.platforms?.map(platform => (
+                          <TooltipProvider key={platform.id} delayDuration={200}>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <img
+                                  src={platform.logo_url}
+                                  style={{ height: '20px', maxWidth: 'auto' }}
+                                />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                {platform.name}
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        ))}
+                      </>
+                    )}
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    {loading ? (
+                      <DetailsSkeleton />
+                    ) : (
+                      <>
+                        <span className="font-semibold">Genres:</span>
+                        <span>{game?.genres?.map(genre => genre.name).join(', ')}</span>
+                      </>
+                    )}
+                  </li>
+                </ul>
+                <a
+                  href={`https://www.igdb.com/games/${game?.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 mt-2 text-sm font-medium text-blue-600 transition-colors outline-none hover:text-blue-500 hover:underline focus:underline"
+                >
+                  {loading ? (
+                    <Skeleton className="inline-block h-5 w-28" />
+                  ) : (
+                    <>
+                      <span>See in IGDB</span>
+                      <ExternalLinkIcon size={16} />
+                    </>
+                  )}
+                </a>
+              </div>
             </div>
-          </div>
-        </DialogMain>
-        <DialogFooter>
-          <Button
-            onClick={handleVote}
-            disabled={saving || !!vote || !game}
-          >
-            {saving ? 'Processing...' : loading ? 'Loading...' : vote ? `You've already requested this game` : 'I want this game back!'}
-          </Button>
-        </DialogFooter>
+          </DialogMain>
+          <DialogFooter>
+            <Button
+              onClick={handleVote}
+              disabled={saving || !!vote || !game}
+            >
+              {saving ? 'Processing...' : loading ? 'Loading...' : vote ? `You've already requested this game` : 'I want this game back!'}
+            </Button>
+          </DialogFooter>
+        </div>
       </DialogModal>
-    </Dialog>
+    </Dialog >
   )
 }

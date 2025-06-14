@@ -96,12 +96,12 @@ export function AppFooter() {
               src="https://tailwindui.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
               className="h-9"
             /> */}
-            <p className="text-gray-300 text-balance text-sm/6">
+            <p className="text-balance text-sm/6 text-primary">
               Just another gamer.
             </p>
             <div className="flex gap-x-6">
               {navigation.social.map((item) => (
-                <a target="_blank" key={item.name} href={item.href} className="text-gray-400 transition-colors hover:text-gray-200">
+                <a target="_blank" key={item.name} href={item.href} className="transition-colors text-secondary hover:text-secondary-foreground">
                   <span className="sr-only">{item.name}</span>
                   <item.icon aria-hidden="true" className="size-6" />
                 </a>
@@ -166,8 +166,8 @@ export function AppFooter() {
             </div> */}
           {/* </div> */}
         </div>
-        <div className="pt-8 mt-8 border-t sm:mt-12 border-white/10">
-          <p className="text-gray-400 text-sm/6">&copy; 2024 Jean Lambert. All rights reserved.</p>
+        <div className="pt-8 mt-8 border-t sm:mt-12 ">
+          <p className="text-secondary text-sm/6">&copy; 2024 Jean Lambert. All rights reserved.</p>
         </div>
       </div>
     </footer>
