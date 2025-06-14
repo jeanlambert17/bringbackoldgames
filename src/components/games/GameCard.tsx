@@ -30,7 +30,7 @@ export function GameCard({ game, onVote, rank }: GameCardProps) {
       const { error } = await supabase
         .from('votes')
         .insert([
-          { game_id: game.id, user_email: user.email }
+          { game_id: game.id, user_id: user.id }
         ])
 
       if (error) throw error

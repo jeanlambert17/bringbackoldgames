@@ -151,14 +151,14 @@ export function GameVoteModal({ game: _game, game_id, open, onOpenChange }: Game
         .from('user_votes')
         .insert({
           game_id: game.id,
-          user_email: user.email,
+          user_id: user.id,
         })
       setVotes(votes => ({
         ...votes,
         [game.id]: {
           id: '',
           game_id: game.id,
-          user_email: user.email as string,
+          user_id: user.id as string,
           created_at: new Date().toISOString()
         }
       }))

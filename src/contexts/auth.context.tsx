@@ -31,7 +31,7 @@ export function AuthProvider({ children }: {
     const { data } = await supabase
       .from('user_votes')
       .select('*')
-      .eq('user_email', user.email)
+      .eq('user_id', user.id)
     setVotes(reduceToMapByField(data as IUserVote[], 'game_id'))
   }, [user])
 
